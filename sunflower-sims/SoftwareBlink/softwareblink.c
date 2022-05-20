@@ -1,5 +1,3 @@
-#include "softwareblink.h"
-
 int
 main(void)
 {

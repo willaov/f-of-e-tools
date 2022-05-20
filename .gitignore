@@ -1,0 +1,10 @@
+*.asc
+*.bin
+*.json
+*.blif
+*.hex
+*.i
+*.o
+*.sr
+*.out
+*.map
