@@ -4,9 +4,6 @@
 [submodule "sunflower"]
 	path = tools/sunflower
 	url = ../../physical-computation/sunflower-simulator.git
-[submodule "verilog/hardware/processor/sail-core"]
-	path = verilog/hardware/processor/sail-core
-	url = ../../physical-computation/Sail-RV32I-common
 [submodule "tools/srec2hex"]
 	path = tools/srec2hex
 	url = ../../physical-computation/srec2hex.git
