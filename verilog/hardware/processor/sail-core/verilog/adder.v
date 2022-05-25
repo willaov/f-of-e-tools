@@ -52,3 +52,137 @@ module adder(input1, input2, out);
 
 	assign		out = input1 + input2;
 endmodule
+
+module hard_adder(input1, input2, out);
+	input [31:0]	input1;
+	input [31:0]	input2;
+	output [31:0]	out;
+
+	// Things it needs
+	wire clk;	// Doesn't actually need a clock as all unregistered
+	assign clk = 1'b1;
+	
+	wire ce;
+	assign ce = 1'b1;
+	wire ahold;
+	assign ahold = 1'b0;
+	wire bhold;
+	assign bhold = 1'b0;
+	wire irsttop;
+	assign irsttop = 1'b0;
+	wire orsttop;
+	assign orsttop = 1'b0;
+	wire oholdtop;
+	assign oholdtop = 1'b0;
+	wire irstbot;
+	assign irstbot = 1'b0;
+	wire orstbot;
+	assign orstbot = 1'b0;
+	wire oholdbot;
+	assign oholdbot = 1'b0;
+	wire ci;
+	assign ci = 1'b0;
+	wire co;
+	wire signextin;
+	assign signextin = 1'b0;
+	wire signextout;
+
+
+	SB_MAC16 i_sbmac16(
+		.CLK(clk),
+		.CE(ce),
+		.A(input1[31:16]),
+		.AHOLD(ahold),
+		.B(input1[15:0]),
+		.BHOLD(bhold),
+		.C(input2[31:16]),
+		.CHOLD(),
+		.D(input2[15:0]),
+		.DHOLD(),
+		.IRSTTOP(irsttop),
+		.ORSTTOP(orsttop),
+		.OLOADTOP(),
+		.ADDSUBTOP(),
+		.OHOLDTOP(oholdtop),
+		.IRSTBOT(),
+		.ORSTBOT(),
+		.ADDSUBBOT(),
+		.O(out),
+		.CI(ci),
+		.CO(co),
+		.ACCUMCI(),
+		.ACCUMCO(),
+		.SIGNEXTIN(signextin),
+		.SIGNEXTOUT(signextout)
+	);
+
+	defparam i_sbmac16.TOPADDSUB_UPPERINPUT = 1'b1;
+	defparam i_sbmac16.BOTADDSUB_UPPERINPUT = 1'b1;
+endmodule
+
+module hard_subtractor(input1, input2, out);
+	input [31:0]	input1;
+	input [31:0]	input2;
+	output [31:0]	out;
+
+	// Things it needs
+	wire clk;	// Doesn't actually need a clock as all unregistered
+	assign clk = 1'b1;
+	
+	wire ce;
+	assign ce = 1'b0;
+	wire ahold;
+	assign ahold = 1'b0;
+	wire bhold;
+	assign bhold = 1'b0;
+	wire irsttop;
+	assign irsttop = 1'b0;
+	wire orsttop;
+	assign orsttop = 1'b0;
+	wire oholdtop;
+	assign oholdtop = 1'b0;
+	wire irstbot;
+	assign irstbot = 1'b0;
+	wire orstbot;
+	assign orstbot = 1'b0;
+	wire oholdbot;
+	assign oholdbot = 1'b0;
+	wire ci;
+	assign ci = 1'b0;
+	wire co;
+	wire signextin;
+	assign signextin = 1'b0;
+	wire signextout;
+
+
+	SB_MAC16 i_sbmac16(
+		.CLK(clk),
+		.CE(ce),
+		.A(input1[31:16]),
+		.AHOLD(ahold),
+		.B(input1[15:0]),
+		.BHOLD(bhold),
+		.C(input2[31:16]),
+		.CHOLD(),
+		.D(input2[15:0]),
+		.DHOLD(),
+		.IRSTTOP(irsttop),
+		.ORSTTOP(orsttop),
+		.OLOADTOP(),
+		.ADDSUBTOP(1'b1),
+		.OHOLDTOP(oholdtop),
+		.IRSTBOT(),
+		.ORSTBOT(),
+		.ADDSUBBOT(1'b1),
+		.O(out),
+		.CI(ci),
+		.CO(co),
+		.ACCUMCI(),
+		.ACCUMCO(),
+		.SIGNEXTIN(signextin),
+		.SIGNEXTOUT(signextout)
+	);
+
+	defparam i_sbmac16.TOPADDSUB_UPPERINPUT = 1'b1;
+	defparam i_sbmac16.BOTADDSUB_UPPERINPUT = 1'b1;
+endmodule
