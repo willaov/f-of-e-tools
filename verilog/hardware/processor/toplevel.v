@@ -33,7 +33,161 @@
 	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 */
+`define CLK_DIVS
+`ifdef CLK_DIVS
+module clk_div2(clk_in, clk_out);
+	input clk_in;
+	output reg clk_out = 1'b0;
 
+	always @(posedge clk_in) begin
+		clk_out = ~clk_out;
+	end
+endmodule
+
+module clk_div4(clk_in, clk_out);
+	input clk_in;
+	output clk_out;
+	wire clk_mid;
+
+	clk_div2 div1(
+		.clk_in(clk_in),
+		.clk_out(clk_mid)
+	);
+
+	clk_div2 div2(
+		.clk_in(clk_mid),
+		.clk_out(clk_out)
+	);
+endmodule
+
+module clk_div8(clk_in, clk_out);
+	input clk_in;
+	output clk_out;
+	wire clk_mid;
+
+	clk_div4 div1(
+		.clk_in(clk_in),
+		.clk_out(clk_mid)
+	);
+
+	clk_div2 div2(
+		.clk_in(clk_mid),
+		.clk_out(clk_out)
+	);
+endmodule
+
+module clk_div16(clk_in, clk_out);
+	input clk_in;
+	output clk_out;
+	wire clk_mid;
+
+	clk_div4 div1(
+		.clk_in(clk_in),
+		.clk_out(clk_mid)
+	);
+
+	clk_div4 div2(
+		.clk_in(clk_mid),
+		.clk_out(clk_out)
+	);
+endmodule
+
+// module clk_div32(clk_in, clk_out);
+// 	input clk_in;
+// 	output clk_out;
+// 	wire clk_mid;
+
+// 	clk_div16 div1(
+// 		.clk_in(clk_in),
+// 		.clk_out(clk_mid)
+// 	);
+
+// 	clk_div2 div2(
+// 		.clk_in(clk_mid),
+// 		.clk_out(clk_out)
+// 	);
+// endmodule
+
+// module clk_div64(clk_in, clk_out);
+// 	input clk_in;
+// 	output clk_out;
+// 	wire clk_mid;
+
+// 	clk_div16 div1(
+// 		.clk_in(clk_in),
+// 		.clk_out(clk_mid)
+// 	);
+
+// 	clk_div4 div2(
+// 		.clk_in(clk_mid),
+// 		.clk_out(clk_out)
+// 	);
+// endmodule
+
+// module clk_div128(clk_in, clk_out);
+// 	input clk_in;
+// 	output clk_out;
+// 	wire clk_mid;
+
+// 	clk_div16 div1(
+// 		.clk_in(clk_in),
+// 		.clk_out(clk_mid)
+// 	);
+
+// 	clk_div8 div2(
+// 		.clk_in(clk_mid),
+// 		.clk_out(clk_out)
+// 	);
+// endmodule
+
+// module clk_div256(clk_in, clk_out);
+// 	input clk_in;
+// 	output clk_out;
+// 	wire clk_mid;
+
+// 	clk_div16 div1(
+// 		.clk_in(clk_in),
+// 		.clk_out(clk_mid)
+// 	);
+
+// 	clk_div16 div2(
+// 		.clk_in(clk_mid),
+// 		.clk_out(clk_out)
+// 	);
+// endmodule
+
+// module clk_div512(clk_in, clk_out);
+// 	input clk_in;
+// 	output clk_out;
+// 	wire clk_mid;
+
+// 	clk_div256 div1(
+// 		.clk_in(clk_in),
+// 		.clk_out(clk_mid)
+// 	);
+
+// 	clk_div2 div2(
+// 		.clk_in(clk_mid),
+// 		.clk_out(clk_out)
+// 	);
+// endmodule
+
+// module clk_div1024(clk_in, clk_out);
+// 	input clk_in;
+// 	output clk_out;
+// 	wire clk_mid;
+
+// 	clk_div256 div1(
+// 		.clk_in(clk_in),
+// 		.clk_out(clk_mid)
+// 	);
+
+// 	clk_div4 div2(
+// 		.clk_in(clk_mid),
+// 		.clk_out(clk_out)
+// 	);
+// endmodule
+`endif
 
 /*
  *	top.v
@@ -48,6 +202,8 @@ module top (led);
 	wire		data_clk_stall;
 	
 	wire		clk;
+	wire 		clk_hf;
+	wire 		clk_lf;
 	reg		ENCLKHF		= 1'b1;	// Plock enable
 	reg		CLKHF_POWERUP	= 1'b1;	// Power up the HFOSC circuit
 	reg		ENCLKLF		= 1'b1;	// Plock enable LFOSC
@@ -60,7 +216,12 @@ module top (led);
 	SB_HFOSC #(.CLKHF_DIV("0b11")) OSCInst0 (
 		.CLKHFEN(ENCLKHF),
 		.CLKHFPU(CLKHF_POWERUP),
-		.CLKHF(clk)
+		.CLKHF(clk_hf)
+	);
+
+	clk_div16 clkdiv(
+		.clk_in(clk_hf),
+		.clk_out(clk)
 	);
 
 	// SB_LFOSC OSCInst0 (
