@@ -1,6 +1,3 @@
-#include "sf-types.h"
-#include "sh7708.h"
-#include "devscc.h"
 #include "bsort-input.h"
 
 int
@@ -12,7 +9,6 @@ main(void)
 
 	while (maxindex > 0)
 	{
-		*gDebugLedsMemoryMappedRegister = 0xFF ^ *gDebugLedsMemoryMappedRegister;
 		for (i = 0; i < maxindex; i++)
 		{
 			if (bsort_input[i] > bsort_input[i+1])
@@ -24,6 +20,9 @@ main(void)
 			}
 		}
 		maxindex--;
+	}
+	if (bsort_input[10] == 32 && bsort_input[16] == 46 && bsort_input[32] == 105) {
+		*gDebugLedsMemoryMappedRegister = 0xFF ^ *gDebugLedsMemoryMappedRegister;
 	}
 
 	return 0;
