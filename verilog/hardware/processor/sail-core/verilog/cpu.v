@@ -44,6 +44,7 @@
 
 module cpu(
 			clk,
+			clk_2,
 			inst_mem_in,
 			inst_mem_out,
 			data_mem_out,
@@ -57,6 +58,7 @@ module cpu(
 	 *	Input Clock
 	 */
 	input clk;
+	input clk_2;
 
 	/*
 	 *	instruction memory input
@@ -349,7 +351,8 @@ module cpu(
 			.A(wb_fwd1_mux_out),
 			.B(alu_mux_out),
 			.ALUOut(alu_result),
-			.Branch_Enable(alu_branch_enable)
+			.Branch_Enable(alu_branch_enable),
+			.clk(clk_2)
 		);
 
 	mux2to1 lui_mux(

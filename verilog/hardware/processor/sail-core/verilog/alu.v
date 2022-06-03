@@ -54,7 +54,7 @@
  *	field is only unique across the instructions that are actually
  *	fed to the ALU.
  */
-module alu(ALUctl, A, B, ALUOut, Branch_Enable);
+module alu(ALUctl, A, B, ALUOut, Branch_Enable, clk);
 	input [6:0]		ALUctl;
 	input [31:0]		A;
 	input [31:0]		B;
@@ -62,6 +62,10 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	output reg		Branch_Enable;
 
 	wire [31:0]		add_out;
+	wire [31:0]		sub_out;
+	input clk;
+	reg add_en = 1'b0;
+	reg sub_en = 1'b0;
 
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
@@ -77,13 +81,25 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		Branch_Enable = 1'b0;
 	end
 
-	adder adder_block(
+	adder_reg adder_block(
 		.input1(A),
 		.input2(B),
-		.out(add_out)
+		.out(add_out),
+		.clk(clk),
+		.clk_en(add_en)
+	);
+
+	subtractor_reg sub_block(
+		.input1(A),
+		.input2(B),
+		.out(sub_out),
+		.clk(clk),
+		.clk_en(sub_en)
 	);
 
 	always @(ALUctl, A, B) begin
+		add_en = 1'b0;
+		sub_en = 1'b0;
 		case (ALUctl[3:0])
 			/*
 			 *	AND (the fields also match ANDI and LUI)
@@ -98,12 +114,17 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD: ALUOut = add_out;
-
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD: begin
+				add_en = 1'b1;
+				ALUOut = add_out;
+			end
 			/*
 			 *	SUBTRACT (the fields also matches all branches)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB: ALUOut = A - B;
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB: begin
+				sub_en = 1'b1;
+				ALUOut = sub_out;
+			end
 
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)

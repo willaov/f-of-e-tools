@@ -204,6 +204,7 @@ module top (led);
 	wire		clk;
 	wire 		clk_hf;
 	wire 		clk_lf;
+	wire 		clk_2;
 	reg		ENCLKHF		= 1'b1;	// Plock enable
 	reg		CLKHF_POWERUP	= 1'b1;	// Power up the HFOSC circuit
 	reg		ENCLKLF		= 1'b1;	// Plock enable LFOSC
@@ -219,8 +220,15 @@ module top (led);
 		.CLKHF(clk_hf)
 	);
 
-	clk_div16 clkdiv(
+	// assign clk_2 = clk_hf;
+	clk_div2 clkdiv2(
 		.clk_in(clk_hf),
+		.clk_out(clk_2)
+	);
+
+	// assign clk = clk_2;
+	clk_div2 clkdiv(
+		.clk_in(clk_2),
 		.clk_out(clk)
 	);
 
@@ -245,6 +253,7 @@ module top (led);
 
 	cpu processor(
 		.clk(clk_proc),
+		.clk_2(clk_2),
 		.inst_mem_in(inst_in),
 		.inst_mem_out(inst_out),
 		.data_mem_out(data_out),
