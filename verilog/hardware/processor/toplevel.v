@@ -59,20 +59,10 @@ module top (led);
 	/*
 	 *	Use the iCE40's hard primitive for the clock source.
 	 */
-	SB_HFOSC OSCInst0 (
+	SB_HFOSC #(.CLKHF_DIV("0b10")) OSCInst0 (
 		.CLKHFEN(ENCLKHF),
 		.CLKHFPU(CLKHF_POWERUP),
-		.CLKHF(clk8)
-	);
-
-	clk_divider divide8to4 (
-		.in_clk(clk8),
-		.out_clk(clk4)
-	);
-
-	clk_divider divide4to2 (
-		.in_clk(clk4),
-		.out_clk(clk2)
+		.CLKHF(clk2)
 	);
 
 	clk_divider divide2to1 (
