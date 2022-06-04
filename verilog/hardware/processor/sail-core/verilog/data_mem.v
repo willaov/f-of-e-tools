@@ -38,8 +38,9 @@
 
 //Data cache
 
-module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data, led, clk_stall);
+module data_mem (clk, enable, addr, write_data, memwrite, memread, sign_mask, read_data, led, clk_stall);
 	input			clk;
+	input 			enable; // enables going from idle state to read write, only possible when slow clock is low
 	input [31:0]		addr;
 	input [31:0]		write_data;
 	input			memwrite;
@@ -239,21 +240,23 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin
-				clk_stall <= 0;
-				memread_buf <= memread;
-				memwrite_buf <= memwrite;
-				write_data_buffer <= write_data;
-				addr_buf <= addr;
-				sign_mask_buf <= sign_mask;
-				if(memread==1'b1) begin
-					word_buf <= data_block[addr[11:2] - 32'h1000];
-					state <= READ;
-					clk_stall <= 1;
-				end
-				if(memwrite==1'b1) begin
-					word_buf <= data_block[addr[11:2] - 32'h1000];
-					state <= WRITE;
-					clk_stall <= 1;
+				if (enable == 1'b0) begin
+					clk_stall <= 0;
+					memread_buf <= memread;
+					memwrite_buf <= memwrite;
+					write_data_buffer <= write_data;
+					addr_buf <= addr;
+					sign_mask_buf <= sign_mask;
+					if(memread==1'b1) begin
+						word_buf <= data_block[addr[11:2] - 32'h1000];
+						state <= READ;
+						clk_stall <= 1;
+					end
+					if(memwrite==1'b1) begin
+						word_buf <= data_block[addr[11:2] - 32'h1000];
+						state <= WRITE;
+						clk_stall <= 1;
+					end
 				end
 			end
 
