@@ -1,3 +1,4 @@
+
 /*
 	Authored 2018-2019, Ryan Voo.
 
@@ -84,6 +85,14 @@ module branch_predictor(
 	 *	the design should instead use a reset signal going to
 	 *	modules in the design and to thereby set the values.
 	 */
+	// wire adder_out;
+
+	adder i_adder(
+		.input1(in_addr),
+		.input2(offset),
+		.out(branch_addr),
+		);
+
 	initial begin
 		s = 2'b00;
 		branch_mem_sig_reg = 1'b0;
@@ -98,6 +107,7 @@ module branch_predictor(
 	 *	therefore can use branch_mem_sig as every branch is followed by
 	 *	a bubble, so a 0 to 1 transition
 	 */
+	
 	always @(posedge clk) begin
 		if (branch_mem_sig_reg) begin
 			s[1] <= (s[1]&s[0]) | (s[0]&actual_branch_decision) | (s[1]&actual_branch_decision);
@@ -105,6 +115,9 @@ module branch_predictor(
 		end
 	end
 
-	assign branch_addr = in_addr + offset;
+
+	// assign branch_addr = in_addr + offset;
 	assign prediction = s[1] & branch_decode_sig;
+	//assign prediction = 0 & branch_decode_sig;
 endmodule
+
