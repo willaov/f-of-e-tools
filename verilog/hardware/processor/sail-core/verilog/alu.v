@@ -89,13 +89,13 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable, clk);
 		.clk_en(add_en)
 	);
 
-	subtractor_reg sub_block(
-		.input1(A),
-		.input2(B),
-		.out(sub_out),
-		.clk(clk),
-		.clk_en(sub_en)
-	);
+	// subtractor_reg sub_block(
+	// 	.input1(A),
+	// 	.input2(B),
+	// 	.out(sub_out),
+	// 	.clk(clk),
+	// 	.clk_en(sub_en)
+	// );
 
 	always @(ALUctl, A, B) begin
 		add_en = 1'b0;
@@ -121,10 +121,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable, clk);
 			/*
 			 *	SUBTRACT (the fields also matches all branches)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB: begin
-				sub_en = 1'b1;
-				ALUOut = sub_out;
-			end
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = A - B;
 
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)
