@@ -38,8 +38,9 @@
 
 //Data cache
 
-module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data, led, clk_stall);
+module data_mem (clk, enable, addr, write_data, memwrite, memread, sign_mask, read_data, led, clk_stall);
 	input			clk;
+	input 			enable; // enables going from idle state to read write, only possible when slow clock is low
 	input [31:0]		addr;
 	input [31:0]		write_data;
 	input			memwrite;
@@ -63,9 +64,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	Possible states
 	 */
 	parameter		IDLE = 0;
-	parameter		READ_BUFFER = 1;
-	parameter		READ = 2;
-	parameter		WRITE = 3;
+	parameter		READ = 1;
+	parameter		WRITE = 2;
 
 	/*
 	 *	Line buffer
@@ -240,30 +240,23 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin
-				clk_stall <= 0;
-				memread_buf <= memread;
-				memwrite_buf <= memwrite;
-				write_data_buffer <= write_data;
-				addr_buf <= addr;
-				sign_mask_buf <= sign_mask;
-				
-				if(memwrite==1'b1 || memread==1'b1) begin
-					state <= READ_BUFFER;
-					clk_stall <= 1;
-				end
-			end
-
-			READ_BUFFER: begin
-				/*
-				 *	Subtract out the size of the instruction memory.
-				 *	(Bad practice: The constant should be a `define).
-				 */
-				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
-				if(memread_buf==1'b1) begin
-					state <= READ;
-				end
-				else if(memwrite_buf == 1'b1) begin
-					state <= WRITE;
+				if (enable == 1'b0) begin
+					clk_stall <= 0;
+					memread_buf <= memread;
+					memwrite_buf <= memwrite;
+					write_data_buffer <= write_data;
+					addr_buf <= addr;
+					sign_mask_buf <= sign_mask;
+					if(memread==1'b1) begin
+						word_buf <= data_block[addr[11:2] - 32'h1000];
+						state <= READ;
+						clk_stall <= 1;
+					end
+					if(memwrite==1'b1) begin
+						word_buf <= data_block[addr[11:2] - 32'h1000];
+						state <= WRITE;
+						clk_stall <= 1;
+					end
 				end
 			end
 
