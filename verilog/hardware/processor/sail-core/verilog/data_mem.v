@@ -248,12 +248,12 @@ module data_mem (clk, enable, addr, write_data, memwrite, memread, sign_mask, re
 					addr_buf <= addr;
 					sign_mask_buf <= sign_mask;
 					if(memread==1'b1) begin
-						word_buf <= data_block[addr[11:2] - 32'h1000];
+						word_buf <= data_block[addr[11:2] - 32'h400];
 						state <= READ;
 						clk_stall <= 1;
 					end
 					if(memwrite==1'b1) begin
-						word_buf <= data_block[addr[11:2] - 32'h1000];
+						word_buf <= data_block[addr[11:2] - 32'h400];
 						state <= WRITE;
 						clk_stall <= 1;
 					end
@@ -273,7 +273,7 @@ module data_mem (clk, enable, addr, write_data, memwrite, memread, sign_mask, re
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
+				data_block[addr_buf_block_addr - 32'h400] <= replacement_word;
 				state <= IDLE;
 			end
 

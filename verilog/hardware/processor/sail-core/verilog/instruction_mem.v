@@ -42,16 +42,17 @@
 
 
 
-module instruction_memory(addr, out);
+module instruction_memory(clk, addr, out);
 	input [31:0]		addr;
-	output [31:0]		out;
+	output reg [31:0]		out;
+	input clk;
 
 	/*
 	 *	Size the instruction memory.
 	 *
 	 *	(Bad practice: The constant should be a `define).
 	 */
-	reg [31:0]		instruction_memory[0:2**12-1];
+	reg [31:0]		instruction_memory[0:2**10-1];
 
 	/*
 	 *	According to the "iCE40 SPRAM Usage Guide" (TN1314 Version 1.0), page 5:
@@ -73,6 +74,7 @@ module instruction_memory(addr, out);
 		 */
 		$readmemh("verilog/program.hex",instruction_memory);
 	end
-
-	assign out = instruction_memory[addr >> 2];
+	always @(posedge clk) begin
+		out = instruction_memory[addr >> 2];
+	end
 endmodule
