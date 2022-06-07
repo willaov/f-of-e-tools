@@ -73,14 +73,14 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	wire[31:0] adder_out;
 	wire[31:0] subtractor_out;
 	wire carry;
-	wire[31:0] complement_out;
+	// wire[31:0] complement_out;
 
-	adder complement_adder(
-		.input1(~B),
-		.input2(32'b1),
-		.out(complement_out),
-		.carry()
-	);
+	// adder complement_adder(
+	// 	.input1(~B),
+	// 	.input2(32'b1),
+	// 	.out(complement_out),
+	// 	.carry()
+	// );
 
 	adder i_adder(
 		.input1(A),
@@ -89,12 +89,12 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		.carry()
 		);
 
-	adder sub_adder(
-		.input1(A),
-		.input2(complement_out),
-		.out(subtractor_out),
-		.carry(carry)
-	);
+	// adder sub_adder(
+	// 	.input1(A),
+	// 	.input2(complement_out),
+	// 	.out(subtractor_out),
+	// 	.carry(carry)
+	// );
 	
 	initial begin
 		ALUOut = 32'b0;
@@ -126,8 +126,8 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)
 			 */
-			// `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = (subtractor_out[31])  ? 32'b1 : 32'b0;
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
+			// `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = (subtractor_out[31])  ? 32'b1 : 32'b0;
 
 			/*
 			 *	SRL (the fields also matches the other SRL variants)
@@ -176,15 +176,15 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
 			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
 			
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = (subtractor_out[31]);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = !(subtractor_out[31]);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = (carry);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = !(carry);
+			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = (subtractor_out[31]);
+			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = !(subtractor_out[31]);
+			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = (carry);
+			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = !(carry);
 
-			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
-			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
-			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
-			// `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
 
 			default:					Branch_Enable = 1'b0;
 		endcase
